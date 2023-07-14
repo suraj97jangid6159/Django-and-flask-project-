@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule Extraction</title>
+</head>
+<body>
+    <h1>Schedule Extraction</h1>
+    <form method="POST" action="/schedule">
+        <input type="hidden" name="filename" value="{{ filename }}">
+        <label for="extraction_time">Extraction Time:</label>
+        <input type="datetime-local" name="extraction_time" required>
+        <br><br>
+        <input type="submit" value="Schedule">
+    </form>
+</body>
+</html>
