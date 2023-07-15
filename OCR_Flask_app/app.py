@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request
-import pytesseract
+# import pytesseract
 from PIL import Image
 from datetime import datetime, timedelta
 import os
-import api_key
+# import api_key 
 
 import requests
 
@@ -12,12 +12,13 @@ app = Flask(__name__)
 # Set the upload folder and allowed extensions
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
-app.config['api_key']=api_key.API_KEY
+app.config['api_key']="K81234338888957"
 # Helper function to check if the file extension is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 def get_extracted_text(image_path):
+    
     # OCR.space API endpoint URL
     api_url = 'https://api.ocr.space/parse/image'
 
@@ -71,7 +72,8 @@ def upload_file():
         # Check if the file has an allowed extension
         if file and allowed_file(file.filename):
             # Save the file to the upload folder
-            filename = datetime.now().strftime('%Y%m%d%H%M%S') + '_' + file.filename
+            # filename = datetime.now().strftime('%Y%m%d%H%M%S') + '_' + file.filename
+            filename =file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             # Redirect to the extraction scheduling page
@@ -98,24 +100,19 @@ def schedule_extraction():
 
     # Perform OCR on the image
     try:
-        
-        extracted_text=get_extracted_text(image_path)
-        # Open the image using Pillow
-        # image = Image.open(image_path)
-        # Perform OCR using Tesseract
-        # print('extrating....')
-        # extracted_text = pytesseract.image_to_string(image ,lang='eng')
-        # print('extracted-')
-        # Print the extracted text
-        # print(extracted_text)
-
-        # output_file = 'output.txt'
-        # with open(output_file, 'w') as f:
-        #     f.write(extracted_text)
+        extracted_text = get_extracted_text(image_path)
     except IOError:
         print('Error: Unable to open or process the image')
+        extracted_text = None
 
-    return render_template('success.html',extracted_text=extracted_text)
+    if extracted_text is not None:
+        return render_template('success.html', extracted_text=extracted_text)
+    else:
+
+        return render_template('error.html', message='Extraction failed')
+
+    # Add a return statement after the exception handling block
+    return render_template('error.html', message='An unexpected error occurred')
 
 if __name__ == '__main__':
     app.run(debug=True)
